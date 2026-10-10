@@ -34,7 +34,7 @@ namespace BankApi.Controllers
             
             _context.Accounts.Add(newAccount);
             _context.SaveChanges();
-            return Ok(newAccount.Id);
+            return Ok(newAccount);
         }
     }
 }
