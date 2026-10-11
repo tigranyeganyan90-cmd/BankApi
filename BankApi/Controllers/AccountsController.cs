@@ -2,7 +2,6 @@
 using BankApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 
 namespace BankApi.Controllers
@@ -51,10 +50,31 @@ namespace BankApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, CreateAccountDto dto)
+        public IActionResult Update(int id, UpdateAccountDto dto)
         {
+            var account = _context.Accounts.FirstOrDefault(a => a.Id == id);
+            if (account == null)
+            {
+                return NotFound();
+            }
+            account.Name = dto.Name;
+            account.Balance = dto.Balance;
+            _context.SaveChanges();
+            return Ok(account);
+        }
 
-            return Ok();
+        [HttpDelete("{id}")]
+
+        public IActionResult Delete(int id)
+        {
+            var account = _context.Accounts.FirstOrDefault(a => a.Id == id);
+            if (account == null)
+            {
+                return NotFound();
+            }
+            _context.Accounts.Remove(account);
+            _context.SaveChanges();
+            return Ok(account);
         }
 
     }
