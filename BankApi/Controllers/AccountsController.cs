@@ -29,9 +29,14 @@ namespace BankApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] string? search)
         {
-            var result = _context.Accounts.ToList();
+            var query = _context.Accounts.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(a => a.Name.Contains(search));
+            }
+            var result = query.ToList();
             return Ok(result);
         }
 
