@@ -8,7 +8,7 @@ namespace BankApi.Dtos
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [Range(0, 100000000)]
+        [Range(0, 1000000000)]
         public decimal Balance { get; set; }
 
     }

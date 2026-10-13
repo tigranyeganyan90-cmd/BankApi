@@ -29,12 +29,16 @@ namespace BankApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery] string? search)
+        public IActionResult GetAll([FromQuery] string? search , [FromQuery] decimal? minBalance)
         {
             var query = _context.Accounts.AsQueryable();
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(a => a.Name.Contains(search));
+            }
+            if (minBalance.HasValue)
+            {
+                query = query.Where(a => a.Balance >= minBalance);
             }
             var result = query.ToList();
             return Ok(result);
