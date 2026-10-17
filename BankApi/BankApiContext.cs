@@ -6,6 +6,7 @@ namespace BankApi
     public class BankApiContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Customer> Customers { get; set; }
         public BankApiContext(DbContextOptions<BankApiContext> options) : base(options)
         { 
             

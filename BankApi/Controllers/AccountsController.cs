@@ -72,8 +72,28 @@ namespace BankApi.Controllers
             return Ok(account);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPatch("{id}")]
+        public IActionResult PartialUpdate(int id, PatchAccountDto dto)
+        { 
+           var account = _context.Accounts.FirstOrDefault(a=>a.Id == id);
+            if (account == null)
+            {
+                return NotFound();
+            }
+            if (dto.Name != null )
+            {
+                account.Name = dto.Name;
+            }
+            if (dto.Balance.HasValue)
+            {
+                account.Balance = dto.Balance.Value;
+            }
+            _context.SaveChanges();
+            return Ok();
+        }
 
+
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             var account = _context.Accounts.FirstOrDefault(a => a.Id == id);
