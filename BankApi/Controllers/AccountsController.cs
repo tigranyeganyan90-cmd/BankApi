@@ -2,6 +2,7 @@
 using BankApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace BankApi.Controllers
@@ -45,16 +46,22 @@ namespace BankApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateAccountDto dto)
+        public async Task<IActionResult> Create(CreateAccountDto dto)
         {
+            var exist = await _context.Customers.AnyAsync(c => c.Id == dto.CustomerId);
+            if (!exist)
+            {
+                return BadRequest($"a customer with this {dto.CustomerId} identifier does not exist");
+            }
             var newAccount = new Account
             {
                 Name = dto.Name,
                 Balance = dto.Balance,
+                CustomerId = dto.CustomerId 
             };
 
             _context.Accounts.Add(newAccount);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return Ok(newAccount);
         }
 

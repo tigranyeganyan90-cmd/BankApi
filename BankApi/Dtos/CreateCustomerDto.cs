@@ -10,6 +10,6 @@ namespace BankApi.Dtos
 
         [Required]
         [StringLength(30, MinimumLength = 6)]
-        public string Phone { get; set; }
+        public string Phone { get; set; } = string.Empty;
     }
 }

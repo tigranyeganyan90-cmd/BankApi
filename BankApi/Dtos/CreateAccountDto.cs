@@ -10,5 +10,7 @@ namespace BankApi.Dtos
 
         [Range(0, 100000000)]
         public decimal Balance { get; set; }
+        [Range(1, int.MaxValue)]
+        public int CustomerId { get; set; }
     }
 }
