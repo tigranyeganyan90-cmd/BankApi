@@ -34,6 +34,18 @@ namespace BankApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}/accounts")]
+        public async Task<IActionResult> GetAccounts(int id)
+        {
+            var exists = await _context.Customers.AnyAsync(c => c.Id == id);
+            if (!exists)
+            {
+                return NotFound();
+            }
+            var accounts = await _context.Accounts.Where(a => a.CustomerId == id).ToListAsync();
+            return Ok(accounts);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateCustomerDto dto)
         {
