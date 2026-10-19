@@ -18,19 +18,27 @@ namespace BankApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
 
-            var result = _context.Accounts.FirstOrDefault(a => a.Id == id);
-            if (result == null)
+            var account = await _context.Accounts
+                .Where(a => a.Id == id)
+                .Select(a => new AccountDto
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    Balance = a.Balance,
+                    CustomerId = a.CustomerId
+                }).FirstOrDefaultAsync();
+            if (account == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+            return Ok(account);
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery] string? search , [FromQuery] decimal? minBalance)
+        public async Task<IActionResult> GetAll([FromQuery] string? search, [FromQuery] decimal? minBalance)
         {
             var query = _context.Accounts.AsQueryable();
             if (!string.IsNullOrWhiteSpace(search))
@@ -41,7 +49,13 @@ namespace BankApi.Controllers
             {
                 query = query.Where(a => a.Balance >= minBalance);
             }
-            var result = query.ToList();
+            var result = await query.Select(a => new AccountDto
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Balance = a.Balance,
+                CustomerId = a.CustomerId
+            }).ToListAsync();
             return Ok(result);
         }
 
@@ -57,7 +71,7 @@ namespace BankApi.Controllers
             {
                 Name = dto.Name,
                 Balance = dto.Balance,
-                CustomerId = dto.CustomerId 
+                CustomerId = dto.CustomerId
             };
 
             _context.Accounts.Add(newAccount);
@@ -81,13 +95,13 @@ namespace BankApi.Controllers
 
         [HttpPatch("{id}")]
         public IActionResult PartialUpdate(int id, PatchAccountDto dto)
-        { 
-           var account = _context.Accounts.FirstOrDefault(a=>a.Id == id);
+        {
+            var account = _context.Accounts.FirstOrDefault(a => a.Id == id);
             if (account == null)
             {
                 return NotFound();
             }
-            if (dto.Name != null )
+            if (dto.Name != null)
             {
                 account.Name = dto.Name;
             }
