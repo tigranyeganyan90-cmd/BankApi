@@ -26,12 +26,26 @@ namespace BankApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
-            if (result == null)
+            var customer = await _context.Customers.Where(c=>c.Id == id)
+                .Select(c=> new CustomerDto
+                { 
+                    Id = c.Id,
+                    FullName = c.FullName,
+                    Phone = c.Phone,
+                    Accounts = c.Accounts.Select(a =>new AccountDto
+                    { 
+                        Id = a.Id,
+                        Name = a.Name,
+                        Balance = a.Balance,
+                        CustomerId = a.CustomerId
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+            if (customer == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+            return Ok(customer);
         }
 
         [HttpGet("{id}/accounts")]
